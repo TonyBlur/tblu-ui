@@ -4,6 +4,7 @@
     --tblu-lens-blur:3px;
     --tblu-lens-brightness:1.18;
     --tblu-surface-fill:rgb(255 255 255 / .12);
+    --tblu-popup-filter:blur(var(--tblu-lens-blur)) brightness(var(--tblu-lens-brightness));
     --tblu-rim-rest:#ffffff2a;
     --tblu-rim-reflection:#ffffffd9;
     --tblu-light-sheen:#ffffff8c;
@@ -50,6 +51,28 @@
     box-shadow:var(--tblu-elevation-shadow);
     -webkit-backdrop-filter:none;
     backdrop-filter:none;
+  }
+  :where([data-tblu-material=solid]) {
+    --tblu-surface-fill:var(--tblu-color-surface);
+    --tblu-menu-fill:var(--tblu-color-surface);
+    --tblu-popup-filter:none;
+    --tblu-color-accent-soft:color-mix(in srgb,var(--tblu-color-accent) 14%,var(--tblu-color-surface));
+    --tblu-danger-fill:color-mix(in srgb,var(--tblu-color-danger) 10%,var(--tblu-color-surface));
+  }
+  :where([data-tblu-material=solid][data-tblu-theme=dark]) { --tblu-color-accent-soft:color-mix(in srgb,var(--tblu-color-accent) 20%,var(--tblu-color-surface)); }
+  @media(prefers-reduced-transparency:reduce),(forced-colors:active) {
+    :where([data-tblu-material]) {
+      --tblu-surface-fill:var(--tblu-color-surface);
+      --tblu-menu-fill:var(--tblu-color-surface);
+      --tblu-popup-filter:none;
+    }
+  }
+  @supports not (backdrop-filter:blur(1px)) {
+    :where([data-tblu-material]) {
+      --tblu-surface-fill:var(--tblu-color-surface);
+      --tblu-menu-fill:var(--tblu-color-surface);
+      --tblu-popup-filter:none;
+    }
   }
   .tblu-material-filters { position:absolute; pointer-events:none; overflow:hidden; }
   .tblu-rim-light { display:none; }

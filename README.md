@@ -42,7 +42,7 @@ npm run preview
 The repository is the distribution source for this initial release. It does not require an npm registry publication.
 
 ```sh
-npm install github:TonyBlur/tblu-ui#v0.1.0 @awesome.me/webawesome motion
+npm install github:TonyBlur/tblu-ui#v0.1.1 @awesome.me/webawesome motion
 ```
 
 The package name is `@tblu/ui`. Use a bundler that supports CSS imports and ES modules, such as Vite. Mount on the client after the DOM is available.

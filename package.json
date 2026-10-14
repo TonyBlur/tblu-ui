@@ -1,6 +1,6 @@
 {
   "name": "@tblu/ui",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Consistent liquid glass and solid UI components, tokens, forms and motion for modern web applications",
   "type": "module",
   "license": "MIT",

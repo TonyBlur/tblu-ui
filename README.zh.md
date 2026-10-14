@@ -42,7 +42,7 @@ npm run preview
 首个版本以 Git 仓库作为分发来源，无需依赖 npm 公共仓库发布。
 
 ```sh
-npm install github:TonyBlur/tblu-ui#v0.1.0 @awesome.me/webawesome motion
+npm install github:TonyBlur/tblu-ui#v0.1.1 @awesome.me/webawesome motion
 ```
 
 包名为 `@tblu/ui`。使用支持 CSS 导入与 ES 模块的打包器，例如 Vite。在浏览器端、DOM 就绪后初始化：

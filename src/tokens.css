@@ -43,9 +43,9 @@
   :where(.tblu-root.tblu-ui,.tblu-root .tblu-ui) *, :where(.tblu-root.tblu-ui,.tblu-root .tblu-ui) *::before, :where(.tblu-root.tblu-ui,.tblu-root .tblu-ui) *::after { box-sizing:border-box; }
   .tblu-native-source { position:absolute!important; width:1px!important; height:1px!important; margin:-1px!important; padding:0!important; border:0!important; opacity:0!important; clip-path:inset(50%)!important; overflow:hidden!important; pointer-events:none!important; }
   .tblu-root :focus-visible { outline:2px solid var(--tblu-color-accent-ink); outline-offset:4px; }
-  .tblu-root * { scrollbar-width:thin; scrollbar-color:color-mix(in srgb,var(--tblu-color-muted) 38%,transparent) transparent; }
-  .tblu-root ::-webkit-scrollbar { width:6px; height:6px; }
-  .tblu-root ::-webkit-scrollbar-track { background:transparent; }
-  .tblu-root ::-webkit-scrollbar-thumb { border-radius:999px; background:color-mix(in srgb,var(--tblu-color-muted) 38%,transparent); }
-  .tblu-root ::-webkit-scrollbar-thumb:hover { background:var(--tblu-color-accent-mid); }
+  .tblu-root,.tblu-root * { scrollbar-width:thin; scrollbar-color:color-mix(in srgb,var(--tblu-color-muted) 38%,transparent) transparent; }
+  .tblu-root::-webkit-scrollbar,.tblu-root ::-webkit-scrollbar { width:6px; height:6px; }
+  .tblu-root::-webkit-scrollbar-track,.tblu-root ::-webkit-scrollbar-track { background:transparent; }
+  .tblu-root::-webkit-scrollbar-thumb,.tblu-root ::-webkit-scrollbar-thumb { border-radius:999px; background:color-mix(in srgb,var(--tblu-color-muted) 38%,transparent); }
+  .tblu-root::-webkit-scrollbar-thumb:hover,.tblu-root ::-webkit-scrollbar-thumb:hover { background:var(--tblu-color-accent-mid); }
 }
