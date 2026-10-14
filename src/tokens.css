@@ -1,0 +1,51 @@
+@layer tblu.tokens {
+  .tblu-root {
+    --tblu-font-body:Inter,'Segoe UI','Microsoft YaHei',system-ui,sans-serif;
+    --tblu-font-size:13px; --tblu-line-height:1.55;
+    --tblu-color-accent:#0284c7; --tblu-color-accent-ink:var(--tblu-color-accent);
+    --tblu-color-bg:#e4eaec; --tblu-color-surface:#ffffff; --tblu-color-text:#23343d;
+    --tblu-color-muted:#607581; --tblu-color-border:#2848581c; --tblu-color-danger:#ad3347;
+    --tblu-color-accent-soft:color-mix(in srgb,var(--tblu-color-accent) 14%,transparent);
+    --tblu-color-accent-mid:color-mix(in srgb,var(--tblu-color-accent) 28%,transparent);
+    --tblu-radius-control:999px; --tblu-radius-card:28px; --tblu-radius-panel:28px;
+    --tblu-control-height:40px; --tblu-control-sm:32px; --tblu-control-lg:48px;
+    --tblu-space-1:4px; --tblu-space-2:8px; --tblu-space-3:12px; --tblu-space-4:16px; --tblu-space-6:24px;
+    --tblu-motion-enter:320ms; --tblu-motion-exit:220ms; --tblu-motion-press:120ms;
+    --tblu-ease:cubic-bezier(.22,1,.36,1); --tblu-press-scale:.97;
+    --tblu-lens-blur:3px; --tblu-lens-brightness:1.18;
+    --tblu-menu-fill:color-mix(in srgb,var(--tblu-color-surface) 86%,transparent);
+    --wa-font-family-body:var(--tblu-font-body); --wa-font-size-s:12px; --wa-font-size-m:13px;
+    --wa-color-text-normal:var(--tblu-color-text); --wa-color-text-quiet:var(--tblu-color-muted);
+    --wa-color-surface-default:var(--tblu-color-surface); --wa-color-surface-raised:var(--tblu-color-surface);
+    --wa-color-surface-border:var(--tblu-color-border); --wa-color-brand-fill-loud:var(--tblu-color-accent);
+    --wa-color-brand-fill-quiet:var(--tblu-color-accent-soft); --wa-color-brand-on-quiet:var(--tblu-color-accent-ink);
+    --wa-color-focus:var(--tblu-color-accent); --wa-form-control-height:var(--tblu-control-height);
+    --wa-form-control-border-radius:var(--tblu-radius-control); --wa-form-control-border-color:var(--tblu-color-border);
+    --wa-form-control-background-color:transparent; --wa-form-control-value-color:var(--tblu-color-text);
+    --wa-panel-border-radius:var(--tblu-radius-panel); --wa-transition-fast:var(--tblu-motion-exit);
+    --wa-transition-normal:var(--tblu-motion-enter); --wa-transition-easing:var(--tblu-ease);
+    color-scheme:light;
+  }
+  .tblu-root[data-tblu-theme=dark] {
+    --tblu-color-bg:#131c23; --tblu-color-surface:#1c2932; --tblu-color-text:#dfebf0;
+    --tblu-color-muted:#acbec8; --tblu-color-border:#c4e2f317; --tblu-color-danger:#fa98a6;
+    --tblu-color-accent-ink:color-mix(in srgb,var(--tblu-color-accent) 60%,#c0ece7);
+    --tblu-color-accent-soft:color-mix(in srgb,var(--tblu-color-accent) 20%,transparent);
+    --tblu-menu-fill:color-mix(in srgb,var(--tblu-color-bg) 88%,transparent);
+    --tblu-lens-brightness:.82; color-scheme:dark;
+  }
+  .tblu-root[data-tblu-motion=reduced] { --tblu-motion-enter:0ms; --tblu-motion-exit:0ms; --tblu-motion-press:0ms; --tblu-press-scale:1; }
+  @media(prefers-reduced-motion:reduce) { .tblu-root { --tblu-motion-enter:0ms; --tblu-motion-exit:0ms; --tblu-motion-press:0ms; --tblu-press-scale:1; } }
+}
+@layer tblu.base {
+  .tblu-root { font-family:var(--tblu-font-body); }
+  :is(.tblu-root.tblu-ui,.tblu-root .tblu-ui) { color:var(--tblu-color-text); font-size:var(--tblu-font-size); line-height:var(--tblu-line-height); }
+  :where(.tblu-root.tblu-ui,.tblu-root .tblu-ui) *, :where(.tblu-root.tblu-ui,.tblu-root .tblu-ui) *::before, :where(.tblu-root.tblu-ui,.tblu-root .tblu-ui) *::after { box-sizing:border-box; }
+  .tblu-native-source { position:absolute!important; width:1px!important; height:1px!important; margin:-1px!important; padding:0!important; border:0!important; opacity:0!important; clip-path:inset(50%)!important; overflow:hidden!important; pointer-events:none!important; }
+  .tblu-root :focus-visible { outline:2px solid var(--tblu-color-accent-ink); outline-offset:4px; }
+  .tblu-root * { scrollbar-width:thin; scrollbar-color:color-mix(in srgb,var(--tblu-color-muted) 38%,transparent) transparent; }
+  .tblu-root ::-webkit-scrollbar { width:6px; height:6px; }
+  .tblu-root ::-webkit-scrollbar-track { background:transparent; }
+  .tblu-root ::-webkit-scrollbar-thumb { border-radius:999px; background:color-mix(in srgb,var(--tblu-color-muted) 38%,transparent); }
+  .tblu-root ::-webkit-scrollbar-thumb:hover { background:var(--tblu-color-accent-mid); }
+}

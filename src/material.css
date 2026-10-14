@@ -1,0 +1,146 @@
+/* MIT, derived from tblu-bookmark / Pintree. Copyright (c) 2024 Pintree.io. */
+@layer tblu.material {
+  :where([data-tblu-material]) {
+    --tblu-lens-blur:3px;
+    --tblu-lens-brightness:1.18;
+    --tblu-surface-fill:rgb(255 255 255 / .12);
+    --tblu-rim-rest:#ffffff2a;
+    --tblu-rim-reflection:#ffffffd9;
+    --tblu-light-sheen:#ffffff8c;
+    --tblu-light-depth:#385b7412;
+    --tblu-ambient-wash:color-mix(in srgb,var(--tblu-color-accent,#0284c7) 42%,transparent);
+    --tblu-active-glow-near:color-mix(in srgb,var(--tblu-color-accent,#0284c7) 44%,transparent);
+    --tblu-active-glow-far:color-mix(in srgb,var(--tblu-color-accent,#0284c7) 20%,transparent);
+    --tblu-shadow-control:0 2px 4px -2px #17344020,0 10px 22px -16px #17344045;
+    --tblu-shadow-raised:0 2px 4px -2px #17344020,0 14px 32px -20px #17344045;
+    --tblu-shadow-floating:0 4px 8px -4px #17344026,0 24px 50px -22px #17344050;
+  }
+  :where([data-tblu-material][data-tblu-theme=dark]) {
+    --tblu-lens-brightness:.82;
+    --tblu-surface-fill:#9cbccc07;
+    --tblu-rim-rest:#e1f4ff0d;
+    --tblu-rim-reflection:#edfaff73;
+    --tblu-light-sheen:#dceffc13;
+    --tblu-light-depth:transparent;
+    --tblu-ambient-wash:color-mix(in srgb,var(--tblu-color-accent,#0284c7) 24%,transparent);
+    --tblu-active-glow-near:color-mix(in srgb,var(--tblu-color-accent,#0284c7) 28%,transparent);
+    --tblu-active-glow-far:color-mix(in srgb,var(--tblu-color-accent,#0284c7) 12%,transparent);
+    --tblu-shadow-control:0 2px 4px -2px #0006,0 10px 22px -16px #0008;
+    --tblu-shadow-raised:0 2px 4px -2px #0006,0 14px 32px -20px #0009;
+    --tblu-shadow-floating:0 4px 8px -4px #0006,0 24px 50px -22px #000a;
+  }
+  :where(.tblu-surface,[data-tblu-surface]) {
+    position:var(--tblu-surface-position,relative);
+    isolation:isolate;
+    --tblu-elevation-shadow:var(--tblu-shadow-control);
+  }
+  :where([data-tblu-surface=card],[data-tblu-surface=panel],[data-tblu-elevation="1"]) { --tblu-elevation-shadow:var(--tblu-shadow-raised); }
+  :where([data-tblu-elevation="2"]) { --tblu-elevation-shadow:var(--tblu-shadow-floating); }
+  :where([data-tblu-elevation="0"]) { --tblu-elevation-shadow:0 0 0 transparent; }
+  :where([data-tblu-material=liquid]) :where(.tblu-surface,[data-tblu-surface]) {
+    border-width:0;
+    border-color:transparent;
+    background:var(--tblu-surface-fill);
+    box-shadow:var(--tblu-elevation-shadow);
+    -webkit-backdrop-filter:blur(var(--tblu-lens-blur)) saturate(125%) brightness(var(--tblu-lens-brightness));
+    backdrop-filter:blur(var(--tblu-lens-blur)) saturate(125%) var(--tblu-lens,brightness(1)) brightness(var(--tblu-lens-brightness));
+  }
+  :where([data-tblu-material=solid]) :where(.tblu-surface,[data-tblu-surface]) {
+    background:var(--tblu-color-surface,#f7f9fa);
+    box-shadow:var(--tblu-elevation-shadow);
+    -webkit-backdrop-filter:none;
+    backdrop-filter:none;
+  }
+  .tblu-material-filters { position:absolute; pointer-events:none; overflow:hidden; }
+  .tblu-rim-light { display:none; }
+  :where([data-tblu-material=liquid]) .tblu-surface>.tblu-rim-light {
+    display:block;
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    padding:0;
+    pointer-events:none;
+    z-index:2;
+    background:none;
+  }
+  :where([data-tblu-material=liquid]) .tblu-rim-light::before,
+  :where([data-tblu-material=liquid]) .tblu-rim-light::after {
+    content:'';
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    background:none;
+    filter:blur(.6px);
+  }
+  :where([data-tblu-material=liquid]) .tblu-rim-light::before {
+    box-shadow:inset 0 0 0 1px var(--tblu-rim-rest);
+    mask:radial-gradient(ellipse 90% 75% at 28% 0%,#000,transparent 75%);
+  }
+  :where([data-tblu-material=liquid]) .tblu-rim-light::after {
+    box-shadow:inset 0 0 0 1px var(--tblu-rim-reflection);
+    mask:radial-gradient(ellipse var(--tblu-light-radius-x,100px) var(--tblu-light-radius-y,70px) at var(--tblu-light-x,50%) var(--tblu-light-y,50%),#000,transparent 82%);
+    opacity:0;
+    transition:opacity var(--tblu-motion-exit,320ms) var(--tblu-ease,cubic-bezier(.22,1,.36,1));
+  }
+  :where([data-tblu-material=liquid]) .tblu-surface.tblu-pointer-lit>.tblu-rim-light::after {
+    opacity:1;
+    transition-duration:var(--tblu-motion-enter,440ms);
+  }
+  :where([data-tblu-material=liquid]) .tblu-surface::before,
+  :where([data-tblu-material=liquid]) .tblu-surface::after {
+    content:'';
+    display:block;
+    position:absolute;
+    inset:0;
+    border-radius:inherit;
+    pointer-events:none;
+    z-index:-1;
+    box-shadow:none;
+    filter:none;
+  }
+  :where([data-tblu-material=liquid]) .tblu-surface::before {
+    background:
+      radial-gradient(ellipse var(--tblu-light-radius-x,100px) var(--tblu-light-radius-y,70px) at var(--tblu-light-x,50%) var(--tblu-light-y,50%),var(--tblu-light-sheen),transparent 80%),
+      radial-gradient(ellipse var(--tblu-light-radius-x,100px) var(--tblu-light-radius-y,70px) at calc(var(--tblu-light-x,50%) + 14px) calc(var(--tblu-light-y,50%) + 10px),var(--tblu-light-depth),transparent 85%);
+    opacity:0;
+    transition:opacity var(--tblu-motion-exit,320ms) var(--tblu-ease,cubic-bezier(.22,1,.36,1));
+  }
+  :where([data-tblu-material=liquid]) .tblu-surface.tblu-pointer-lit::before { opacity:.85; transition-duration:var(--tblu-motion-enter,440ms); }
+  :where([data-tblu-material=liquid]) .tblu-surface::after {
+    background:radial-gradient(ellipse 110% 90% at var(--tblu-ambient-x,50%) var(--tblu-ambient-y,0%),var(--tblu-ambient-wash),transparent 82%);
+    opacity:var(--tblu-ambient-intensity,0);
+    transition:opacity var(--tblu-motion-enter,440ms) var(--tblu-ease,cubic-bezier(.22,1,.36,1));
+  }
+  :where([data-tblu-material=liquid]) .tblu-surface.tblu-active {
+    box-shadow:var(--tblu-elevation-shadow),0 0 18px -4px var(--tblu-active-glow-near),0 0 44px -10px var(--tblu-active-glow-far);
+  }
+  /* A crisp keyboard indicator remains available even when optical effects are unavailable. */
+  :where(.tblu-surface,[data-tblu-surface]):focus-visible,
+  :where(.tblu-surface,[data-tblu-surface]) :where(button,a,input,select,textarea,[tabindex]):focus-visible {
+    outline:2px solid var(--tblu-color-accent,#0284c7);
+    outline-offset:3px;
+  }
+  @supports not (backdrop-filter:blur(1px)) {
+    :where([data-tblu-material=liquid]) :where(.tblu-surface,[data-tblu-surface]) { background:var(--tblu-color-surface,#f7f9fa); }
+  }
+  @media (prefers-reduced-transparency:reduce),(forced-colors:active) {
+    :where([data-tblu-material=liquid]) :where(.tblu-surface,[data-tblu-surface]) {
+      background:var(--tblu-color-surface,#f7f9fa);
+      -webkit-backdrop-filter:none;
+      backdrop-filter:none;
+    }
+    .tblu-surface::before,.tblu-surface::after,.tblu-surface>.tblu-rim-light { display:none; }
+  }
+  @media (forced-colors:active) {
+    :where(.tblu-surface,[data-tblu-surface]) { border:1px solid CanvasText; }
+    :where(.tblu-surface,[data-tblu-surface]):focus-visible,
+    :where(.tblu-surface,[data-tblu-surface]) :where(button,a,input,select,textarea,[tabindex]):focus-visible { outline-color:Highlight; }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .tblu-surface::before,.tblu-surface::after,.tblu-rim-light::after { transition:none; }
+  }
+  :where([data-tblu-motion=reduced]) .tblu-surface::before,
+  :where([data-tblu-motion=reduced]) .tblu-surface::after,
+  :where([data-tblu-motion=reduced]) .tblu-rim-light::after { transition:none; }
+  .tblu-expanding { overflow:hidden; }
+}
