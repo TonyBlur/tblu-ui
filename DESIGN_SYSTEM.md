@@ -124,6 +124,12 @@ Use meaningful automated tests for adapter semantics and state/lifecycle logic. 
 
 ## Migration and release policy
 
+Before 1.0, all GitHub releases are prereleases. SemVer-suffixed builds remain prereleases at any major version. Tags stay immutable. See [release policy](docs/RELEASES.md).
+
+The researched [112-type coverage inventory](docs/component-coverage-research.md) and [live coverage matrix](docs/COVERAGE.md) separate primitives, compositions and specialist integrations. A sample card or an engine lifecycle shell does not establish support for advanced grid, scheduler, chart or editor semantics.
+
+Application and studio styles own layout and content typography. The framework owns control skin, focus, material, feedback and scrollbar treatment. A new variant belongs in the common component layer and its state gallery, never in a demo-only override.
+
 A consuming application should keep one integration adapter that maps legacy markup into the public classes and attributes during migration. Track every component family in an inventory: dropdowns, buttons, cards, tables, tabs, form inputs, switches, checkboxes, radio groups, color pickers, ranges, overlays, and scroll regions.
 
 Move common visual rules into tblu-ui, replace legacy styles with the shared contract, then remove duplicate application rules. Keep the existing behavior and form semantics covered while migrating. The adapter is a transition boundary; new code should use public classes directly.

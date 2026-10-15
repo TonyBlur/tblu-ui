@@ -5,6 +5,7 @@ import '@awesome.me/webawesome/dist/components/switch/switch.js';
 import '@awesome.me/webawesome/dist/components/radio-group/radio-group.js';
 import '@awesome.me/webawesome/dist/components/radio/radio.js';
 import { bridgeProperty, selectOptions, selectedValue, equivalentValue, normalColor } from './control-helpers.mjs';
+import { mountTemporalPickers } from './temporal.js';
 
 const sourceSelector = 'select,input[type=color],.tblu-switch input[type=checkbox]';
 const fieldSelector = '.tblu-field textarea,.tblu-field input:not([type]),.tblu-field input:is([type=text],[type=password],[type=email],[type=url],[type=number],[type=tel],[type=search])';
@@ -58,7 +59,7 @@ function iconNode(document,render,name) {
 }
 
 /** Enhance native form controls while leaving their data and application handlers intact. */
-export function mountControls(root = document,{icon,labels = {}} = {}) {
+export function mountControls(root = document,{icon,labels = {},locale = (root.ownerDocument || root).documentElement?.lang || 'en'} = {}) {
   const document = root.ownerDocument || root, view = document.defaultView;
   const entries = new Map(), fields = new Map(), standardized = new Map();
   let stopped = false, pending = false, syncing = false;
@@ -66,6 +67,7 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
   const listen = (target,type,handler,options) => { target.addEventListener(type,handler,options); const dispose = () => target.removeEventListener(type,handler,options); listeners.push(dispose); return dispose; };
   const withinRoot = node => node.isConnected && (root === document || root.contains(node));
   const defer = callback => (view?.queueMicrotask || queueMicrotask)(callback);
+  const temporal = mountTemporalPickers(root,{icon,labels,locale});
 
   function sync(entry) {
     if (syncing || !withinRoot(entry.source)) return;
@@ -141,10 +143,12 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
     const kind = source.localName === 'select' ? 'select' : source.type === 'color' ? 'color' : 'switch';
     const control = document.createElement(kind === 'select' ? 'wa-select' : kind === 'color' ? 'wa-color-picker' : 'wa-switch');
     control.className = `tblu-${kind === 'color' ? 'color-picker' : kind === 'switch' ? 'switch-control' : 'select'}`;
+    control.dataset.tbluAdapter=kind;
     control.name = ''; control.size = 's';
     if (kind === 'select') control.pill = true;
     if (kind === 'color') { control.format = 'hex'; control.withoutFormatToggle = true; control.placement = 'bottom-start'; }
-    const wrapper = document.createElement('span'); wrapper.className = `tblu-control tblu-control-${kind}`; wrapper.dataset.tbluSurface = 'control';
+    const wrapper = document.createElement('span'); wrapper.className = `tblu-control tblu-control-${kind}`;
+    if (kind !== 'switch') wrapper.dataset.tbluSurface = 'control';
     const attributes = new Map(['style','tabindex','aria-hidden','data-tblu-native-source'].map(name=>[name,source.getAttribute(name)]));
     const entry = {source,control,wrapper,kind,attributes,restores:[],optionRestores:[],disposers:[],visualClick:false,hadClass:source.classList.contains('tblu-native-source')};
     const on = (target,type,handler,options) => { target.addEventListener(type,handler,options); entry.disposers.push(()=>target.removeEventListener(type,handler,options)); };
@@ -196,6 +200,7 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
   function syncField(entry) {
     entry.wrapper.toggleAttribute('data-disabled',entry.source.disabled || entry.source.matches(':disabled'));
     entry.wrapper.toggleAttribute('data-readonly',entry.source.readOnly);
+    entry.wrapper.toggleAttribute('data-invalid',entry.source.getAttribute('aria-invalid') === 'true' || Boolean(entry.reportedInvalid && !entry.source.validity.valid));
   }
 
   function enhanceField(source) {
@@ -207,8 +212,8 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
     const entry = {source,wrapper,hadClass:source.classList.contains('tblu-input'),restores:[],disposers:[]};
     fields.set(source,entry); source.before(wrapper); wrapper.append(source); source.classList.add('tblu-input');
     for (const property of ['disabled','readOnly']) entry.restores.push(bridgeProperty(source,property,()=>syncField(entry)));
-    const invalid = () => wrapper.setAttribute('data-invalid','');
-    const input = () => { if (source.validity.valid) wrapper.removeAttribute('data-invalid'); };
+    const invalid = () => { entry.reportedInvalid=true; syncField(entry); };
+    const input = () => { if (source.validity.valid) entry.reportedInvalid=false; syncField(entry); };
     source.addEventListener('invalid',invalid); source.addEventListener('input',input);
     entry.disposers.push(()=>source.removeEventListener('invalid',invalid),()=>source.removeEventListener('input',input));
     syncField(entry);
@@ -222,6 +227,7 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
 
   function refresh() {
     if (stopped) return;
+    temporal.refresh();
     for (const entry of [...entries.values()]) { if (!withinRoot(entry.source)) release(entry); else sync(entry); }
     for (const entry of [...fields.values()]) { if (!withinRoot(entry.source)) releaseField(entry); else syncField(entry); }
     for (const [element,className] of standardized) if (!withinRoot(element)) { element.classList.remove(className); standardized.delete(element); }
@@ -229,7 +235,7 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
     sources.forEach(enhance);
     const nativeFields = [...root.querySelectorAll(fieldSelector)]; if (root.matches?.(fieldSelector)) nativeFields.unshift(root);
     nativeFields.forEach(enhanceField);
-    for (const [selector,className] of [['wa-switch','tblu-switch-control'],['wa-radio','tblu-radio'],['wa-radio-group','tblu-radio-group']]) {
+    for (const [selector,className] of [['wa-switch','tblu-switch-control'],['wa-radio','tblu-radio'],['wa-radio-group','tblu-radio-group'],['input[type=checkbox]:not(.tblu-native-source):not(.tblu-switch input)','tblu-checkbox'],['input[type=range]','tblu-range'],['input[type=file]','tblu-file']]) {
       root.querySelectorAll(selector).forEach(element=>{
         if (!element.classList.contains(className)) { element.classList.add(className); standardized.set(element,className); }
       });
@@ -240,11 +246,11 @@ export function mountControls(root = document,{icon,labels = {}} = {}) {
   observer.observe(root === document ? document.documentElement : root,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['value','checked','disabled','readonly','required','multiple','selected','label','aria-label','aria-labelledby','aria-describedby','aria-invalid','title']});
   listen(root,'reset',()=>defer(()=>{
     for (const entry of entries.values()) sync(entry);
-    for (const entry of fields.values()) { entry.wrapper.removeAttribute('data-invalid'); syncField(entry); }
+    for (const entry of fields.values()) { entry.reportedInvalid=false; entry.wrapper.removeAttribute('data-invalid'); syncField(entry); }
   }),true);
   refresh();
   return {
     refresh,
-    destroy() { if (stopped) return; stopped = true; observer.disconnect(); listeners.forEach(dispose=>dispose()); for (const entry of [...entries.values()]) release(entry); for (const entry of [...fields.values()]) releaseField(entry); for (const [element,className] of standardized) element.classList.remove(className); standardized.clear(); },
+    destroy() { if (stopped) return; stopped = true; observer.disconnect(); temporal.destroy(); listeners.forEach(dispose=>dispose()); for (const entry of [...entries.values()]) release(entry); for (const entry of [...fields.values()]) releaseField(entry); for (const [element,className] of standardized) element.classList.remove(className); standardized.clear(); },
   };
 }

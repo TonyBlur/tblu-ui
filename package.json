@@ -1,6 +1,6 @@
 {
   "name": "@tblu/ui",
-  "version": "0.1.1",
+  "version": "0.2.0-beta.1",
   "description": "Consistent liquid glass and solid UI components, tokens, forms and motion for modern web applications",
   "type": "module",
   "license": "MIT",
@@ -15,7 +15,14 @@
     "./styles.css": "./src/styles.css",
     "./icons": "./src/icons.js",
     "./motion": "./src/motion.js",
-    "./material-math": "./src/material-math.mjs"
+    "./material-math": "./src/material-math.mjs",
+    "./catalog": "./src/catalog.mjs",
+    "./patterns/forms": "./src/patterns-forms.js",
+    "./patterns/form-examples": "./src/patterns-form-examples.js",
+    "./patterns/navigation": "./src/patterns-navigation.js",
+    "./patterns/collections": "./src/patterns-collections.js",
+    "./patterns/workflow": "./src/patterns-workflow.js",
+    "./patterns/content": "./src/patterns-content.js"
   },
   "files": [
     "src",

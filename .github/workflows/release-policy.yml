@@ -1,0 +1,21 @@
+name: Enforce prerelease policy
+on:
+  release:
+    types: [published, edited]
+permissions:
+  contents: write
+jobs:
+  policy:
+    if: github.event.release.prerelease == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark pre-1.0 releases as prereleases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name }}
+        shell: bash
+        run: |
+          if [[ "$TAG" =~ ^v?0\. ]] || [[ "$TAG" == *-* ]]; then
+            gh release edit "$TAG" --repo "$REPOSITORY" --prerelease --latest=false
+          fi

@@ -3,3 +3,5 @@
 @import './tokens.css';
 @import './components.css';
 @import './material.css';
+@import './primitives.css'; /* Shared free primitives and feedback */
+@import './patterns.css';

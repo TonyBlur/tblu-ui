@@ -137,12 +137,7 @@
   :where([data-tblu-material=liquid]) .tblu-surface.tblu-active {
     box-shadow:var(--tblu-elevation-shadow),0 0 18px -4px var(--tblu-active-glow-near),0 0 44px -10px var(--tblu-active-glow-far);
   }
-  /* A crisp keyboard indicator remains available even when optical effects are unavailable. */
-  :where(.tblu-surface,[data-tblu-surface]):focus-visible,
-  :where(.tblu-surface,[data-tblu-surface]) :where(button,a,input,select,textarea,[tabindex]):focus-visible {
-    outline:2px solid var(--tblu-color-accent,#0284c7);
-    outline-offset:3px;
-  }
+  /* Keyboard feedback is provided by the shared component focus light. */
   @supports not (backdrop-filter:blur(1px)) {
     :where([data-tblu-material=liquid]) :where(.tblu-surface,[data-tblu-surface]) { background:var(--tblu-color-surface,#f7f9fa); }
   }
@@ -157,7 +152,7 @@
   @media (forced-colors:active) {
     :where(.tblu-surface,[data-tblu-surface]) { border:1px solid CanvasText; }
     :where(.tblu-surface,[data-tblu-surface]):focus-visible,
-    :where(.tblu-surface,[data-tblu-surface]) :where(button,a,input,select,textarea,[tabindex]):focus-visible { outline-color:Highlight; }
+    :where(.tblu-surface,[data-tblu-surface]) :where(button,a,input,select,textarea,[tabindex]):focus-visible { outline:2px solid Highlight; outline-offset:3px; }
   }
   @media (prefers-reduced-motion:reduce) {
     .tblu-surface::before,.tblu-surface::after,.tblu-rim-light::after { transition:none; }

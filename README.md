@@ -1,10 +1,52 @@
+<div align="center">
+
 # tblu-ui
 
-A consistent interface system for modern web applications, with **liquid glass** and **solid** materials. Shared tokens and interaction rules cover buttons, menus, cards, tables, form controls, color pickers, scrollbars, icons, and motion.
+**A coherent interface system for the whole application.**
 
-[中文说明](README.zh.md) · [Design system contract](DESIGN_SYSTEM.md) · [Demo source](demo/) · [License](LICENSE)
+Liquid glass & solid · light & dark · framework-neutral Web Components
 
-The component studio is deployed by the included GitHub Pages workflow. Its target address is [tonyblur.github.io/tblu-ui](https://tonyblur.github.io/tblu-ui/). A deployment is available after that workflow completes successfully.
+[**Explore the studio →**](https://tonyblur.github.io/tblu-ui/) · [中文](README.zh.md) · [API guide](docs/API.md) · [Design contract](DESIGN_SYSTEM.md)
+
+**0.2.0 beta** · MIT · MingCute icons · Web Awesome · Motion
+
+</div>
+
+![The real tblu-ui studio in dark mode](docs/images/studio-dark.png)
+
+<table><tr><td width="50%">
+
+**Light, with the same components**
+
+![Light theme studio](docs/images/studio-light.png)
+
+</td><td width="50%">
+
+**Shared controls, including calendars**
+
+![Calendar and form controls](docs/images/calendar-dark.png)
+
+</td></tr></table>
+
+## A catalog organized around real websites
+
+The [official-source research](docs/component-coverage-research.md) compares **13 ecosystem families** and consolidates **112 component types**. The studio links **105 types to live interactive evidence**. Seven specialist types have explicit integration boundaries: a local agenda, small chart or JSON textarea is not presented as a professional scheduler, plotting engine or code editor.
+
+| Family | Representative components | Typical sites |
+| --- | --- | --- |
+| Foundations | Tokens, typography, layouts, surfaces, scroll areas, splitters | Every application |
+| Navigation | Menus, split actions, breadcrumbs, tabs, pagination, command palette, resizable sidebar | Content sites, admin, developer tools |
+| Forms | Validation summaries, password, quantity, autocomplete, tags, OTP, cascader, tree selection, transfer | Accounts, settings, commerce |
+| Dates & scheduling | Calendar, time, constrained range, month, ISO week, zoned instants, countdown, local agenda | Bookings, reporting |
+| Collections | Floating table headers, selection, sorting, grid/list, filters, query rules, trees, descriptions | Admin, catalogs, files |
+| Feedback | Dialog, confirmation, drawer, tooltip, rich preview, toast, notifications, progress, skeleton, recovery, tour | Every application |
+| Files & media | Dropzone, transport-owned queue, gallery, lightbox, carousel, comparison, local player | Files, commerce, publishing |
+| Collaboration | Composer, messages, thread, reactions, presence, timeline, activity, wizard, Kanban | Team tools, support, workflows |
+| Metrics & editors | KPI, accessible SVG line/bar, sparkline, capacity meter, code, safe Markdown, editor primitives | Dashboards, documentation |
+
+The directory filters by interaction, component family and website scenario. [Coverage and limits](docs/COVERAGE.md) distinguish reusable APIs, composed recipes and unbundled specialist engines.
+
+> **Preview release:** every release before 1.0 is a GitHub prerelease. APIs may evolve. See [release policy](docs/RELEASES.md) and [changelog](CHANGELOG.md).
 
 ## What this project provides
 
@@ -13,6 +55,9 @@ The component studio is deployed by the included GitHub Pages workflow. Its targ
 - Web Awesome select, color picker, switch, and radio primitives, styled and enhanced through one adapter.
 - Native form controls retain their values, application events, and form submission behavior.
 - Shared floating menus and popovers, including dismissal and keyboard interaction.
+- Native date/time sources enhanced with custom calendars and time lists; no operating-system date menu.
+- Dialogs, actionable notifications, tooltips, resizable sidebars and independent sticky table headers.
+- Reusable form, collection, file queue, messaging, Kanban and metric controllers, exercised by scenario recipes.
 - A single MingCute icon family, also used for internal control glyphs.
 - Keyboard focus, selected, disabled, invalid, loading, and reduced motion states.
 - A component studio with real interactions and responsive layouts.
@@ -42,7 +87,7 @@ npm run preview
 The repository is the distribution source for this initial release. It does not require an npm registry publication.
 
 ```sh
-npm install github:TonyBlur/tblu-ui#v0.1.1 @awesome.me/webawesome motion
+npm install github:TonyBlur/tblu-ui#v0.2.0-beta.1 @awesome.me/webawesome motion
 ```
 
 The package name is `@tblu/ui`. Use a bundler that supports CSS imports and ES modules, such as Vite. Mount on the client after the DOM is available.
@@ -105,9 +150,17 @@ Applications still provide accessible labels and semantic state attributes. Styl
 | `openMenu(anchor, options)` | Create an anchored action menu. |
 | `createPopover(anchor, options)` | Create an anchored surface from a content Node. |
 | `destroyOverlays(root)` | Remove every overlay anchored inside a root; `ui.destroy()` also calls it. |
+| `openDialog(options)` | Native modal focus containment, async actions, inline failure and focus restoration. |
+| `showToast(options)` | Timed or persistent feedback with a paused timer and optional action. |
+| `attachTooltip(anchor, options)` | Shared focus/hover tooltip; restores the original title on teardown. |
+| `mountSidebarResize(options)` | Pointer and keyboard resizing with bounds, cancellation and width callbacks. |
+| `mountFloatingTableHeader(root, options)` | Move real header controls into a separate sticky surface, synchronizing widths and horizontal scrolling. |
+| `loadPrimitives(names)` | Lazily register documented free Web Components; Pro-only names are rejected. |
 | `motion` | Shared enter, leave, and interaction helpers. |
 
 Supported theme options include `theme` (`system`, `light`, `dark`), `material` (`liquid`, `solid`), `motion` (`full`, `reduced`), `accent` (a six digit hex color), `blur`, and `contrast`. Use the package's validation contract rather than bypassing it with visual overrides.
+
+The [API guide](docs/API.md) documents pattern subpath imports and host-owned data/transport contracts. The material studio also exposes content size and density, with shared CSS variables for those layout preferences.
 
 ```js
 const editButton = document.querySelector('#collectionActions');

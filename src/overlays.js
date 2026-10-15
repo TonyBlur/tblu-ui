@@ -58,7 +58,7 @@ export function createPopover(anchor, { content, title = '', placement = 'bottom
   function syncPortalTheme() {
     if (!themeRoot || themeRoot === doc.documentElement) return;
     popup.classList.add('tblu-root', 'tblu-ui');
-    for (const name of ['theme', 'material', 'motion']) {
+    for (const name of ['theme', 'material', 'motion', 'input']) {
       if (themeRoot.dataset[`tblu${name[0].toUpperCase()}${name.slice(1)}`]) popup.dataset[`tblu${name[0].toUpperCase()}${name.slice(1)}`] = themeRoot.dataset[`tblu${name[0].toUpperCase()}${name.slice(1)}`];
     }
     const computed = view.getComputedStyle(themeRoot), active = new Set();
@@ -102,7 +102,7 @@ export function createPopover(anchor, { content, title = '', placement = 'bottom
   if (themeRoot && themeRoot !== doc.documentElement) {
     portalMaterial = createMaterial({ root: popup, themeRoot: popup });
     themeObserver = new view.MutationObserver(syncPortalTheme);
-    themeObserver.observe(themeRoot, { attributes: true, attributeFilter: ['data-tblu-theme', 'data-tblu-material', 'data-tblu-motion', 'style', 'class'] });
+    themeObserver.observe(themeRoot, { attributes: true, attributeFilter: ['data-tblu-theme', 'data-tblu-material', 'data-tblu-motion', 'data-tblu-input', 'style', 'class'] });
   }
   Promise.resolve(popup.updateComplete).then(() => {
     const enter = () => {

@@ -7,6 +7,7 @@ class Target {
   listeners=new Map();
   addEventListener(type,callback){if(!this.listeners.has(type))this.listeners.set(type,new Set());this.listeners.get(type).add(callback);}
   removeEventListener(type,callback){this.listeners.get(type)?.delete(callback);}
+  dispatchEvent(event){for(const callback of this.listeners.get(event.type)||[])callback(event);return true;}
   get listenerCount(){return [...this.listeners.values()].reduce((sum,callbacks)=>sum+callbacks.size,0);}
 }
 class Element extends Target {
@@ -60,7 +61,7 @@ test('concurrent calls share one promise/controller; destroy closes scoped porta
   const [first,other]=await Promise.all([pending,second]);assert.equal(first,other);
   assert.equal(first.theme.material,'solid');assert.equal(button.getAttribute('data-tblu-surface'),'control');
   const popup=createPopover(button,{content:doc.createElement('p'),title:'Information'});
-  assert.equal(doc.listenerCount,2);
+  assert.equal(doc.listenerCount,4,'document modality plus overlay dismissal listeners');
   await first.destroy();await other.destroy();
   assert.equal(popup.isConnected,false,'a body portal is removed through its scoped anchor');
   assert.equal(doc.listenerCount,0);assert.equal(root.listenerCount,0);assert.equal(frames.size,0);
@@ -93,4 +94,25 @@ test('SVG class mutations use the class attribute and ignore runtime-only class 
   mountObserver.callback([{type:'attributes',attributeName:'class',target:svg,oldValue:'tblu-card tblu-surface'}]);
   assert.equal(frames.size,0,'pure lighting classes do not trigger a preparation frame');
   await ui.destroy();
+});
+
+test('document modality tracks pointer/keyboard input for scoped roots and restores authored attributes',async()=>{
+  const {root,doc}=boundary();
+  root.setAttribute('data-tblu-input','authored');
+  const secondRoot=doc.createElement('section');doc.body.append(secondRoot);
+  const first=await mountUI(root,{enhanceNative:false,material:'solid'});
+  const second=await mountUI(secondRoot,{enhanceNative:false,material:'solid'});
+  assert.equal(root.getAttribute('data-tblu-input'),'keyboard');assert.equal(secondRoot.getAttribute('data-tblu-input'),'keyboard');
+  doc.dispatchEvent({type:'pointerdown',pointerType:'touch'});
+  assert.equal(root.getAttribute('data-tblu-input'),'pointer');assert.equal(secondRoot.getAttribute('data-tblu-input'),'pointer','input outside either root applies document-wide');
+  for(const event of [{key:'Shift'},{key:'Control'},{key:'Alt'},{key:'Meta'},{key:'AltGraph'},{key:'k',ctrlKey:true},{key:'k',metaKey:true},{key:'k',altKey:true}]) {
+    doc.dispatchEvent({type:'keydown',...event});assert.equal(root.getAttribute('data-tblu-input'),'pointer','modifiers and shortcuts do not switch feedback');
+  }
+  doc.dispatchEvent({type:'keydown',key:'Tab',shiftKey:true});
+  assert.equal(root.getAttribute('data-tblu-input'),'keyboard');assert.equal(secondRoot.getAttribute('data-tblu-input'),'keyboard');
+  first.setTheme({theme:'dark'});assert.equal(root.getAttribute('data-tblu-input'),'keyboard');
+  await first.destroy();assert.equal(root.getAttribute('data-tblu-input'),'authored');
+  doc.dispatchEvent({type:'pointerdown'});assert.equal(root.getAttribute('data-tblu-input'),'authored','destroy removes the document listeners');assert.equal(secondRoot.getAttribute('data-tblu-input'),'pointer');
+  await second.destroy();assert.equal(secondRoot.hasAttribute('data-tblu-input'),false);
+  assert.equal(doc.listenerCount,0);
 });

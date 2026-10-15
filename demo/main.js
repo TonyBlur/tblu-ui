@@ -1,11 +1,13 @@
-import { mountUI, icon, openMenu, createPopover } from '../src/index.js';
+import { renderMaterialStudio } from './material-studio.js';
+import {renderCatalog} from './catalog.js';
+import { mountUI, icon, openMenu, createPopover, mountSidebarResize, mountFloatingTableHeader,showToast as notify,attachTooltip } from '../src/index.js';
 import '../src/styles.css';
 import './demo.css';
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
 const escapeHTML = (value) => String(value).replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]);
-const defaults = { theme: 'dark', material: 'liquid', motion: 'full', accent: '#0284c7' };
+const defaults = { theme: 'dark', material: 'liquid', motion: 'full', accent: '#0284c7', blur:3, contrast:.18, textSize:13, density:'comfortable' };
 let theme = { ...defaults };
 const collections = [
   { icon: 'Folder', title: 'Design references', description: 'Foundations, systems, and thoughtful details.', chip: '12 items', elevation: '1' },
@@ -24,10 +26,32 @@ const rows = [
 $('#tableRows').innerHTML = rows.map((row) => `<tr><td><input class="tblu-checkbox" type="checkbox" data-row-selection aria-label="Select ${escapeHTML(row.name)}"/></td><td><span class="demo-table-name"><span>${icon(row.icon)}</span><strong>${escapeHTML(row.name)}</strong></span></td><td><span class="tblu-chip">${escapeHTML(row.category)}</span></td><td>${escapeHTML(row.date)}</td><td><span class="demo-table-status">${row.status === 'Available' ? '<span class="demo-status-dot" aria-hidden="true"></span>' : ''}${escapeHTML(row.status)}</span></td><td><button class="tblu-icon-button" data-tblu-size="sm" aria-label="Edit ${escapeHTML(row.name)}" data-demo-toast="The edit action uses the shared icon button.">${icon('Pencil')}</button></td></tr>`).join('');
 $$('[data-demo-icon]').forEach((element) => { element.innerHTML = icon(element.dataset.demoIcon); });
 const ui = await mountUI(document, { ...theme, enhanceNative: true });
+const sidebarUI = mountSidebarResize({handle:$('#demoSidebarResize'),width:Number(localStorage.getItem('tblu-studio-sidebar')) || 248,enabled:()=>innerWidth>850,onCommit:width=>localStorage.setItem('tblu-studio-sidebar',String(width))});
+const tableUI = mountFloatingTableHeader($('.demo-table-panel'));
+const materialStudio = renderMaterialStudio($('#materials'),{updateTheme,getTheme:()=>theme,icon});
+$('#materials').insertAdjacentHTML('afterbegin','<div class="demo-section-heading"><div><span class="demo-section-number">Materials</span><h2>Materials & optics</h2><p>Inspect the surface, then tune readability and density with shared controls.</p></div></div>');
+const sidebarToggle = $('#demoSidebarToggle'), sidebar = $('#demoSidebar'), backdrop = $('#demoSidebarBackdrop');
+let sidebarOpen = false;
+function showSidebar(open) {
+  sidebarOpen = open; document.body.dataset.sidebarOpen = String(open);
+  sidebarToggle.setAttribute('aria-expanded',String(open));
+  sidebarToggle.setAttribute('aria-label',open ? 'Close navigation' : 'Open navigation');
+  const narrow = innerWidth <= 850; sidebar.inert = narrow && !open; backdrop.hidden = !narrow || !open; sidebarToggle.hidden = !narrow;
+}
+sidebarToggle.onclick = () => showSidebar(!sidebarOpen);
+backdrop.onclick = () => showSidebar(false);
+$('.demo-navigation').addEventListener('click',()=>{if(innerWidth<=850)showSidebar(false);});
+window.addEventListener('resize',()=>showSidebar(false));
+showSidebar(false); ui.refresh();
 
 function updateTheme(patch) {
   theme = { ...theme, ...patch };
   ui.setTheme(theme);
+  document.documentElement.style.setProperty('--tblu-content-font-size',`${theme.textSize}px`);
+  document.documentElement.style.setProperty('--tblu-table-padding-block',theme.density === 'compact' ? '8px' : '16px');
+  document.documentElement.style.setProperty('--tblu-card-padding',theme.density === 'compact' ? '16px' : '24px');
+  materialStudio?.sync(theme);
+  $('#materialMode').value = theme.material;
   const labels = { dark: 'Dark theme', light: 'Light theme', system: 'System theme' };
   $('#themeSummary').textContent = `${labels[theme.theme]} · ${theme.material === 'liquid' ? 'Liquid glass' : 'Solid'} · ${theme.motion === 'full' ? 'Full motion' : 'Reduced motion'}`;
   $('#themeCode').textContent = `ui.setTheme({ theme: '${theme.theme}', material: '${theme.material}', motion: '${theme.motion}', accent: '${theme.accent}' });`;
@@ -43,14 +67,17 @@ $('#resetTheme').addEventListener('click', () => {
   Object.entries(fields).forEach(([key, selector]) => { $(selector).value = defaults[key]; $(selector).dispatchEvent(new Event('change', { bubbles: true })); });
   updateTheme(defaults);
 });
-let toastTimer;
 function showToast(message) {
-  $('#demoToastMessage').textContent = message;
-  $('#demoToast').hidden = false;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { $('#demoToast').hidden = true; }, 4200);
+  return notify({message,root:document});
 }
-$('#dismissToast').addEventListener('click', () => { clearTimeout(toastTimer); $('#demoToast').hidden = true; });
+$('#demoToast')?.remove();
+const catalogHost=document.createElement('section');catalogHost.id='catalog';catalogHost.className='demo-section';$('.demo-footer').before(catalogHost);
+const catalog=await renderCatalog(catalogHost,{ui,notify:showToast});
+for(const [hash,label,glyph] of [['catalog','Component directory','Grid2X2'],['catalog-forms','Forms & validation','Settings'],['catalog-temporal','Dates & scheduling','Calendar'],['catalog-media','Files & media','Image'],['catalog-workflow','Workflow & chat','Send'],['catalog-content','Metrics & editors','FileJson']]) {
+  const link=document.createElement('a');link.className='tblu-menu-item';link.href='#'+hash;link.innerHTML=icon(glyph);link.append(document.createTextNode(label));$('.demo-navigation').append(link);
+}
+for(const button of $$('button[aria-label]:not([aria-haspopup]):not([hidden])'))attachTooltip(button,{text:button.getAttribute('aria-label')});
+ui.refresh();
 document.addEventListener('click', (event) => {
   const action = event.target.closest('[data-demo-toast]');
   if (action && !action.disabled) showToast(action.dataset.demoToast);
@@ -149,4 +176,4 @@ if ('IntersectionObserver' in window) {
   $$('main > section[id]').forEach((section) => observer.observe(section));
 }
 updateTheme({});
-window.addEventListener('pagehide', () => { clearTimeout(toastTimer); ui.destroy(); }, { once: true });
+window.addEventListener('pagehide', () => { catalog.destroy(); materialStudio.destroy(); sidebarUI.destroy(); tableUI.destroy(); ui.destroy(); }, { once: true });

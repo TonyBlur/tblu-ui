@@ -1,4 +1,32 @@
+<div align="center">
+
 # tblu-ui
+
+**覆盖整站的统一界面系统**
+
+液态玻璃与实体材质 · 浅色与深色主题 · 不绑定应用框架的 Web Components
+
+[**打开组件演示站 →**](https://tonyblur.github.io/tblu-ui/) · [English](README.md) · [API 文档](docs/API.md) · [设计规范](DESIGN_SYSTEM.md)
+
+**0.2.0 beta** · MIT 开源 · MingCute 图标 · Web Awesome · Motion
+
+</div>
+
+![深色模式组件演示站实拍](docs/images/studio-dark.png)
+
+| 浅色主题 | 共用日历与表单材质 |
+| --- | --- |
+| ![浅色主题实拍](docs/images/studio-light.png) | ![日历控件实拍](docs/images/calendar-dark.png) |
+
+## 从网站场景组织组件
+
+对照 [13 个主流 UI 生态的官方文档](docs/component-coverage-research.md)，整理了 112 类组件目录，涵盖九组：基础与布局、动作与导航、表单与验证、日期与排期、数据集合、浮层与反馈、文件媒体、协作流程、指标与编辑器。
+
+演示站将 **105 类通用类型**关联到实际交互示例，并支持按组件和网站场景筛选。另有 7 类专业能力单独注明集成边界：本地日程、简单图表和 JSON 文本框不会冒充完整排期、专业绘图和代码编辑引擎。详见 [覆盖清单与限制](docs/COVERAGE.md)。
+
+适用场景包括内容网站、账号与设置、管理后台、电商、预约排期、聊天协作、文件管理、数据看板和开发工具。
+
+> **预发布阶段：** 1.0 之前的版本全部为 GitHub prerelease，API 仍可能调整。参见 [发布规则](docs/RELEASES.md) 与 [更新记录](CHANGELOG.md)。
 
 为现代网页应用提供统一视觉和交互规范的 UI 框架，支持**液态玻璃**与**实体**两种材质。按钮、菜单、卡片、表格、表单、颜色选择器、滚动条、图标和动效共用一套设计变量与规则。
 
@@ -42,7 +70,7 @@ npm run preview
 首个版本以 Git 仓库作为分发来源，无需依赖 npm 公共仓库发布。
 
 ```sh
-npm install github:TonyBlur/tblu-ui#v0.1.1 @awesome.me/webawesome motion
+npm install github:TonyBlur/tblu-ui#v0.2.0-beta.1 @awesome.me/webawesome motion
 ```
 
 包名为 `@tblu/ui`。使用支持 CSS 导入与 ES 模块的打包器，例如 Vite。在浏览器端、DOM 就绪后初始化：
